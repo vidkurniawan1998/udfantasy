@@ -1,16 +1,17 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Products extends CI_Controller
 {
     public function __construct()
     {
-        parent:: __construct();
+        parent::__construct();
         $this->load->library('main');
         $this->load->library('cart');
     }
 
-    public function index($category = NULL, $sub_category = NULL){
+    public function index($category = NULL, $sub_category = NULL)
+    {
         $data = $this->main->data_front();
 
         $keyword = $this->input->get('search');
@@ -31,10 +32,10 @@ class Products extends CI_Controller
             $what_category = $sub_category ? 'sub_category' : 'category';
             $unselect_category = $sub_category ? 'category' : 'sub_category';
             $fill_category = $sub_category ? $sub_category : $category;
-            $select_query = 'products.*, products_'.$what_category.'.slug as '.$what_category.'_slug, products_'.$unselect_category.'.slug as '.$unselect_category.'_slug';
+            $select_query = 'products.*, products_' . $what_category . '.slug as ' . $what_category . '_slug, products_' . $unselect_category . '.slug as ' . $unselect_category . '_slug';
             $where_category = array(
                 'products.use' => 'yes',
-                'products_'.$what_category.'.slug' => $fill_category
+                'products_' . $what_category . '.slug' => $fill_category
             );
             $type_category = 'one_of';
         } else {
@@ -60,39 +61,39 @@ class Products extends CI_Controller
         }
 
         switch ($sort) {
-            case 'latest' :
+            case 'latest':
                 $order_column = 'products.created_at';
                 $order_desc_asc = 'DESC';
                 break;
 
-            case 'bestseller' :
+            case 'bestseller':
                 $order_column = 'products.best_seller';
                 $order_desc_asc = 'DESC';
                 break;
 
-            case 'average-rating' :
+            case 'average-rating':
                 $order_column = 'products.average_rating';
                 $order_desc_asc = 'DESC';
                 break;
 
-            case 'price-low-high' :
+            case 'price-low-high':
                 $order_column = 'products.price';
                 $order_desc_asc = 'ASC';
                 break;
 
-            case 'price-high-low' :
+            case 'price-high-low':
                 $order_column = 'products.price';
                 $order_desc_asc = 'DESC';
                 break;
 
-            default :
+            default:
                 $order_column = 'products.created_at';
                 $order_desc_asc = 'DESC';
         }
 
         if (empty($max_price)) {
             switch ($type_sorter) {
-                case 'key_yes_cat_both_yes' :
+                case 'key_yes_cat_both_yes':
                     $array_keyword = array('products.title' => $keyword);
                     $array_or_keyword = array('products.description' => $keyword, 'products.title_eng' => $keyword);
 
@@ -108,7 +109,7 @@ class Products extends CI_Controller
                         ->get('products')
                         ->row()->price;
                     break;
-                case 'key_no_cat_both_yes' :
+                case 'key_no_cat_both_yes':
                     $array_keyword = array('products.title' => $keyword);
                     $array_or_keyword = array('products.description' => $keyword, 'products.title_eng' => $keyword);
 
@@ -122,7 +123,7 @@ class Products extends CI_Controller
                         ->get('products')
                         ->row()->price;
                     break;
-                case 'key_yes_cat_one_of' :
+                case 'key_yes_cat_one_of':
                     $array_keyword = array('products.title' => $keyword);
                     $array_or_keyword = array('products.description' => $keyword, 'products.title_eng' => $keyword);
 
@@ -130,7 +131,7 @@ class Products extends CI_Controller
                         ->select($select_query)
                         ->select_max('products.price')
                         ->join('products_' . $what_category, 'products_' . $what_category . '.id = products.id_products_' . $what_category)
-                        ->join('products_'. $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
+                        ->join('products_' . $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
                         ->where($where_category)
                         ->like($array_keyword)
                         ->or_like($array_or_keyword)
@@ -138,18 +139,18 @@ class Products extends CI_Controller
                         ->get('products')
                         ->row()->price;
                     break;
-                case 'key_no_cat_one_of' :
+                case 'key_no_cat_one_of':
                     $max_price = $this->db
                         ->select($select_query)
                         ->select_max('products.price')
                         ->join('products_' . $what_category, 'products_' . $what_category . '.id = products.id_products_' . $what_category)
-                        ->join('products_'. $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
+                        ->join('products_' . $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
                         ->where($where_category)
                         ->order_by($order_column, $order_desc_asc)
                         ->get('products')
                         ->row()->price;
                     break;
-                case 'key_yes_cat_none' :
+                case 'key_yes_cat_none':
                     $array_keyword = array('products.title' => $keyword);
                     $array_or_keyword = array('products.description' => $keyword, 'products.title_eng' => $keyword);
 
@@ -165,7 +166,7 @@ class Products extends CI_Controller
                         ->get('products')
                         ->row()->price;
                     break;
-                default :
+                default:
                     $max_price = $this->db
                         ->select($select_query)
                         ->select_max('products.price')
@@ -188,17 +189,17 @@ class Products extends CI_Controller
 
         $data['page'] = $this->db->where(array('type' => 'shop', 'id_language' => $data['id_language']))->get('pages')->row();
         $params = $_SERVER['QUERY_STRING'];
-        $this->session->set_userdata('uri_shop', current_url().'?'.$params);
+        $this->session->set_userdata('uri_shop', current_url() . '?' . $params);
 
         switch ($type_sorter) {
-            case 'key_yes_cat_both_yes' :
+            case 'key_yes_cat_both_yes':
                 $jumlah_data = $this->db
                     ->select($select_query)
                     ->join('products_category', 'products_category.id = products.id_products_category')
                     ->join('products_sub_category', 'products_sub_category.id = products.id_products_sub_category', 'left')
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->like($array_keyword)
                     ->or_like($array_or_keyword)
                     ->order_by($order_column, $order_desc_asc)
@@ -210,22 +211,22 @@ class Products extends CI_Controller
                     ->join('products_category', 'products_category.id = products.id_products_category')
                     ->join('products_sub_category', 'products_sub_category.id = products.id_products_sub_category', 'left')
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->like($array_keyword)
                     ->or_like($array_or_keyword)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products', 12, $offset)
                     ->result();
                 break;
-            case 'key_no_cat_both_yes' :
+            case 'key_no_cat_both_yes':
                 $jumlah_data = $this->db
                     ->select($select_query)
                     ->join('products_category', 'products_category.id = products.id_products_category')
                     ->join('products_sub_category', 'products_sub_category.id = products.id_products_sub_category', 'left')
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products')
                     ->num_rows();
@@ -235,20 +236,20 @@ class Products extends CI_Controller
                     ->join('products_category', 'products_category.id = products.id_products_category')
                     ->join('products_sub_category', 'products_sub_category.id = products.id_products_sub_category', 'left')
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products', 12, $offset)
                     ->result();
                 break;
-            case 'key_yes_cat_one_of' :
+            case 'key_yes_cat_one_of':
                 $jumlah_data = $this->db
                     ->select($select_query)
-                    ->join('products_'.$what_category, 'products_'.$what_category.'.id = products.id_products_'.$what_category)
-                    ->join('products_'. $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
+                    ->join('products_' . $what_category, 'products_' . $what_category . '.id = products.id_products_' . $what_category)
+                    ->join('products_' . $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->like($array_keyword)
                     ->or_like($array_or_keyword)
                     ->order_by($order_column, $order_desc_asc)
@@ -257,48 +258,48 @@ class Products extends CI_Controller
 
                 $data['products_list'] = $this->db
                     ->select($select_query)
-                    ->join('products_'.$what_category, 'products_'.$what_category.'.id = products.id_products_'.$what_category)
-                    ->join('products_'. $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
+                    ->join('products_' . $what_category, 'products_' . $what_category . '.id = products.id_products_' . $what_category)
+                    ->join('products_' . $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->like($array_keyword)
                     ->or_like($array_or_keyword)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products', 12, $offset)
                     ->result();
                 break;
-            case 'key_no_cat_one_of' :
+            case 'key_no_cat_one_of':
                 $jumlah_data = $this->db
                     ->select($select_query)
-                    ->join('products_'.$what_category, 'products_'.$what_category.'.id = products.id_products_'.$what_category)
-                    ->join('products_'. $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
+                    ->join('products_' . $what_category, 'products_' . $what_category . '.id = products.id_products_' . $what_category)
+                    ->join('products_' . $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products')
                     ->num_rows();
 
                 $data['products_list'] = $this->db
                     ->select($select_query)
-                    ->join('products_'.$what_category, 'products_'.$what_category.'.id = products.id_products_'.$what_category)
-                    ->join('products_'. $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
+                    ->join('products_' . $what_category, 'products_' . $what_category . '.id = products.id_products_' . $what_category)
+                    ->join('products_' . $unselect_category, ' products_' . $unselect_category . '.id = products.id_products_' . $unselect_category)
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products', 12, $offset)
                     ->result();
                 break;
-            case 'key_yes_cat_none' :
+            case 'key_yes_cat_none':
                 $jumlah_data = $this->db
                     ->select($select_query)
                     ->join('products_category', 'products_category.id = products.id_products_category')
                     ->join('products_sub_category', 'products_sub_category.id = products.id_products_sub_category', 'left')
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->like($array_keyword)
                     ->or_like($array_or_keyword)
                     ->order_by($order_column, $order_desc_asc)
@@ -308,24 +309,24 @@ class Products extends CI_Controller
                 $data['products_list'] = $this->db
                     ->select($select_query)
                     ->join('products_category', 'products_category.id = products.id_products_category')
-                    ->join('products_sub_category', 'products_sub_category.id = products.id_products_sub_category','left')
+                    ->join('products_sub_category', 'products_sub_category.id = products.id_products_sub_category', 'left')
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->like($array_keyword)
                     ->or_like($array_or_keyword)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products', 12, $offset)
                     ->result();
                 break;
-            default :
+            default:
                 $jumlah_data = $this->db
                     ->select($select_query)
                     ->join('products_category', 'products_category.id = products.id_products_category')
                     ->join('products_sub_category', 'products_sub_category.id = products.id_products_sub_category', 'left')
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products')
                     ->num_rows();
@@ -335,8 +336,8 @@ class Products extends CI_Controller
                     ->join('products_category', 'products.id_products_category = products_category.id')
                     ->join('products_sub_category', 'products.id_products_sub_category = products_sub_category.id', 'left')
                     ->where($where_category)
-                    ->where('price >= '.$lowest_price_range)
-                    ->where('price <= '.$highest_price_range)
+                    ->where('price >= ' . $lowest_price_range)
+                    ->where('price <= ' . $highest_price_range)
                     ->order_by($order_column, $order_desc_asc)
                     ->get('products', 12, $offset)
                     ->result();
@@ -346,9 +347,9 @@ class Products extends CI_Controller
         $this->load->library('pagination');
 
         if (!empty($category) && !empty($sub_category)) {
-            $config['base_url'] = site_url('produk/'.$category.'/'.$sub_category.'/');
+            $config['base_url'] = site_url('produk/' . $category . '/' . $sub_category . '/');
         } else if (!empty($category)) {
-            $config['base_url'] = site_url('produk/'.$category.'/');
+            $config['base_url'] = site_url('produk/' . $category . '/');
         } else {
             $config['base_url'] = site_url('produk/');
         }
@@ -422,7 +423,7 @@ class Products extends CI_Controller
             ->get('products')
             ->row();
         $data['products_images'] = $this->db->where('id_products', $data['products_detail']->id)->order_by('id', 'ASC')->get('products_image')->result();
-        $data['products_category'] = $this->db->where('id',$data['products_detail']->id_products_category)->get('products_category')->row();
+        $data['products_category'] = $this->db->where('id', $data['products_detail']->id_products_category)->get('products_category')->row();
         $data['products_random'] = $this->db
             ->select('products.*, products_category.slug as category_slug, products_sub_category.slug as sub_category_slug')
             ->join('products_category', 'products_category.id = products.id_products_category')
@@ -449,10 +450,10 @@ class Products extends CI_Controller
             $data['home'] = $this->db->where(array('type' => 'home', 'id_language' => $data['id_language']))->get('pages')->row();
         }
         $this->template->front('products_detail', $data);
-
     }
 
-    public function uri_get($get){
+    public function uri_get($get)
+    {
         $base_url = site_url();
         $base_query_pos = strpos($base_url, '?');
 
@@ -463,45 +464,46 @@ class Products extends CI_Controller
         return $base_url;
     }
 
-    public function review($slug_product) {
+    public function review($slug_product)
+    {
         error_reporting(0);
 
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('name', 'Name User', 'required');
-		$this->form_validation->set_rules('rating', 'Rating', 'required');
-		$this->form_validation->set_rules('email', 'Email User', 'required');
-		$this->form_validation->set_rules('message', 'Message User', 'required');
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('name', 'Name User', 'required');
+        $this->form_validation->set_rules('rating', 'Rating', 'required');
+        $this->form_validation->set_rules('email', 'Email User', 'required');
+        $this->form_validation->set_rules('message', 'Message User', 'required');
         $this->form_validation->set_rules('captcha', 'Security Code', 'required|callback_captcha_check');
-		$this->form_validation->set_error_delimiters('', '');
+        $this->form_validation->set_error_delimiters('', '');
 
-		if ($this->form_validation->run() == FALSE) {
-		    echo json_encode(array(
-				'status' => 'error',
-				'message' => 'The form is not correct',
-				'errors' => array(
-					'name' => form_error('name'),
-					'rating' => form_error('rating'),
-					'email' => form_error('email'),
-					'message' => form_error('message'),
+        if ($this->form_validation->run() == FALSE) {
+            echo json_encode(array(
+                'status' => 'error',
+                'message' => 'The form is not correct',
+                'errors' => array(
+                    'name' => form_error('name'),
+                    'rating' => form_error('rating'),
+                    'email' => form_error('email'),
+                    'message' => form_error('message'),
                     'captcha' => form_error('captcha'),
-				)
-			));
+                )
+            ));
         } else {
-		    $this->load->model('m_products_review');
-		    $this->load->model('m_products');
+            $this->load->model('m_products_review');
+            $this->load->model('m_products');
 
-			$data = $this->input->post(NULL);
-			unset($data['captcha']);
+            $data = $this->input->post(NULL);
+            unset($data['captcha']);
 
-			$product = $this->db->where('slug', $slug_product)->get('products')->row();
-			$category_title = $this->db->select('products_category.title')->where('id', $product->id_products_category)->get('products_category')->row();
-			$data['id_products'] = $product->id;
+            $product = $this->db->where('slug', $slug_product)->get('products')->row();
+            $category_title = $this->db->select('products_category.title')->where('id', $product->id_products_category)->get('products_category')->row();
+            $data['id_products'] = $product->id;
 
             $this->m_products_review->input_data($data);
 
-            $update_data['count_rating'] = $product->count_rating+1;
-            $update_data['total_rating'] = $product->total_rating+$data['rating'];
-            $update_data['average_rating'] = ($product->total_rating+$data['rating'])/$update_data['count_rating'];
+            $update_data['count_rating'] = $product->count_rating + 1;
+            $update_data['total_rating'] = $product->total_rating + $data['rating'];
+            $update_data['average_rating'] = ($product->total_rating + $data['rating']) / $update_data['count_rating'];
             $where_update = array(
                 'id' => $data['id_products']
             );
@@ -509,10 +511,10 @@ class Products extends CI_Controller
             $this->m_products->update_data($where_update, $update_data);
 
             echo json_encode(array(
-				'status' => 'success',
+                'status' => 'success',
                 'reloadPage' => 'reload',
-				'message' => 'success input data',
-			));
+                'message' => 'success input data',
+            ));
         }
     }
 

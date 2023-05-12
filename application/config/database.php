@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------
@@ -75,14 +75,14 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '159.65.132.116',
-	'username' => 'bayu',
-	'password' => 'B4yU(*#!3431Sdf',
-	'database' => 'ud_fantasy',
-//	'hostname' => 'localhost',
-//	'username' => 'fantasyonline_main_user',
-//	'password' => 'Z*!tX]d^d,%D',
-//	'database' => 'fantasyonline_db_front',
+	'hostname' => '127.0.0.1',
+	'username' => 'root',
+	'password' => '',
+	'database' => 'db_udfantasy',
+	//	'hostname' => 'localhost',
+	//	'username' => 'fantasyonline_main_user',
+	//	'password' => 'Z*!tX]d^d,%D',
+	//	'database' => 'fantasyonline_db_front',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
